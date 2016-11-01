@@ -13,25 +13,54 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""
+        delete from matches
+        ;""")
+    conn.commit()
+    conn.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""
+        delete from players
+        ;""")
+    conn.commit()
+    conn.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""
+        select count(players)
+        from players
+        ;""")
+    results = c.fetchone()
+    conn.close()
+    return results[0]
 
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
-  
+
     The database assigns a unique serial id number for the player.  (This
     should be handled by your SQL database schema, not in your Python code.)
-  
+
     Args:
       name: the player's full name (need not be unique).
     """
+    conn = connect()
+    c = conn.cursor()
+    x = name
+    c.execute("insert into players (name) values (%s)", (x,))
+    conn.commit()
+    conn.close()
 
 
 def playerStandings():
@@ -47,6 +76,19 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""
+        select player_id, name, count(wins), count(matches)
+        from players, matches
+            join
+        xyz
+        ;""")
+    results = c.fetchall()
+    conn.close()
+    return results
+
 
 
 def reportMatch(winner, loser):
