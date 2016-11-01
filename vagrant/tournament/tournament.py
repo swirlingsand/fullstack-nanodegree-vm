@@ -80,15 +80,16 @@ def playerStandings():
     conn = connect()
     c = conn.cursor()
     c.execute("""
-        select player_id, name, count(wins), count(matches)
-        from players, matches
-            join
-        xyz
+        select player_id, name,
+        count(matches.winner = player_id), count(matches)
+        from players left join matches
+            on players.player_id = matches.player1 or
+            players.player_id = matches.player2
+        group by players.player_id
         ;""")
     results = c.fetchall()
     conn.close()
     return results
-
 
 
 def reportMatch(winner, loser):
@@ -98,8 +99,15 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
- 
+    
+    conn = connect()
+    c = conn.cursor()
+    c.execute("insert into matches (player1, winner) values (%s, %s)", (winner, winner,))
+    c.execute("insert into matches (player2, loser) values (%s, %s)", (loser, loser,))
+    conn.commit()
+    conn.close()
+
+
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
   
@@ -116,4 +124,14 @@ def swissPairings():
         name2: the second player's name
     """
 
-
+    conn = connect()
+    c = conn.cursor()
+    c.execute("""
+        select matches.player1, a.name, matches.player2, b.name
+        from players as a, players as b, matches
+        where matches.player1 < matches.winner
+        having count(matches.player1 = matches.winner) = count(matches.player2 = matches.winner)
+        ;""")
+    results = c.fetchall()
+    conn.close()
+    return results
