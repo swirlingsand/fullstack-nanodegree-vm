@@ -9,7 +9,6 @@ Files:
 SQL database setup --> /tournament.sql
 Functions --> /tournament.py
 Unit tests --> /tournament_test.py
-Helper functions --> /helpers
 
 
 Description:
