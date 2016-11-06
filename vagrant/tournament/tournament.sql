@@ -1,22 +1,24 @@
--- Table definitions for the tournament project.
---
--- Put your SQL 'create table' statements in this file; also 'create view'
--- statements if you choose to use it.
---
--- You can write comments in this file by starting them with two dashes, like
--- these lines here.
 
 
+-- this file is part of the tournmant psql project
+-- it creates the basic data structures and 3 views central to tournament.py
+
+
+-- built in drop function to allow easy testing
+
+drop database tournament;
 create database tournament;
 \c tournament;
-
--- look up DROP IF EXISTS if needed
 
 
 create table players (
 	player_id	serial		primary key,
 	name		text
 );
+
+-- seperation of concerns for being a player in a match and receiving an outcome
+-- this could be used in the future for example to assign a player to a match
+-- prior to the match being played
 
 create table matches (
 	match_id	serial		primary key,
@@ -25,3 +27,31 @@ create table matches (
 	winner		integer,
 	loser		integer
 );
+
+-- create a view of winners by joining players and matches
+-- match on player_id = winner (which is also a player id)
+-- use left join as a player may not yet have a win or match for that matter
+
+create view winners as
+	select players.player_id, players.name, count(matches.winner) as wins
+	from players left join matches on players.player_id = matches.winner
+	group by players.player_id, players.name order by players.player_id;
+
+-- same concept as winners for losers
+-- ! important, make sure comparing player ID to loser in loser view
+
+create view losers as
+	select players.player_id, players.name, count(matches.loser) as losses
+	from players left join matches on players.player_id = matches.loser
+	group by players.player_id, players.name order by players.player_id;
+
+
+-- combine winners and losers view into a unified view
+-- (winner.wins + losers.losses) = total count
+-- perform join on user ID
+-- in order to fulfill requirement that first entry on the list is player in first place
+
+create view standings as
+	select winners.player_id, winners.name, winners.wins, (winners.wins + losers.losses) as matches
+	from winners left join losers on winners.player_id = losers.player_id
+	order by winners.wins DESC;
