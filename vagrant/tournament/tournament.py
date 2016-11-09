@@ -6,43 +6,57 @@
 import psycopg2
 
 
-def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+def connect(database_name="tournament"):
+    """Connect to the PostgreSQL database.  Returns a database connection.
+
+    11/9/2016 Per udacity suggestion, refactored connect method to deal with
+    both cursor and db. And to setup better exception handling with try/except
+
+    """
+
+    try:
+        db = psycopg2.connect("dbname={}".format(database_name))
+        cursor = db.cursor()
+        return db, cursor
+    except:
+        print("Error connecting.")
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    conn = connect()
-    c = conn.cursor()
-    c.execute("""
+    db, cursor = connect()
+
+    cursor.execute("""
         delete from matches
         ;""")
-    conn.commit()
-    conn.close()
+
+    db.commit()
+    db.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    conn = connect()
-    c = conn.cursor()
-    c.execute("""
+    db, cursor = connect()
+
+    cursor.execute("""
         delete from players
         ;""")
-    conn.commit()
-    conn.close()
+
+    db.commit()
+    db.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    conn = connect()
-    c = conn.cursor()
-    c.execute("""
+    db, cursor = connect()
+
+    cursor.execute("""
         select count(players)
         from players
         ;""")
-    results = c.fetchone()
-    conn.close()
+    results = cursor.fetchone()
+
+    db.close()
     return results[0]
 
 
@@ -57,12 +71,14 @@ def registerPlayer(name):
 
       Passing variable so as to avoid SQL injection.
     """
-    conn = connect()
-    c = conn.cursor()
-    x = name
-    c.execute("insert into players (name) values (%s)", (x,))
-    conn.commit()
-    conn.close()
+    db, cursor = connect()
+
+    query = "insert into players (name) values (%s);"
+    params = (name, )
+    cursor.execute(query, params)
+
+    db.commit()
+    db.close()
 
 
 def playerStandings():
@@ -79,11 +95,12 @@ def playerStandings():
         matches: the number of matches the player has played
     """
 
-    conn = connect()
-    c = conn.cursor()
-    c.execute("select * from standings")
-    results = c.fetchall()
-    conn.close()
+    db, cursor = connect()
+
+    cursor.execute("select * from standings;")
+    results = cursor.fetchall()
+
+    db.close()
     return results
 
     """
@@ -106,21 +123,22 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    conn = connect()
-    c = conn.cursor()
-    c.execute("insert into matches (winner, loser) values (%s, %s)", (winner, loser,))
-    conn.commit()
-    conn.close()
+    db, cursor = connect()
+
+    cursor.execute("insert into matches (winner, loser) values (%s, %s);", (winner, loser,))
+
+    db.commit()
+    db.close()
 
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
-  
+
     Assuming that there are an even number of players registered, each player
     appears exactly once in the pairings.  Each player is paired with another
     player with an equal or nearly-equal win record, that is, a player adjacent
     to him or her in the standings.
-  
+
     Returns:
       A list of tuples, each of which contains (id1, name1, id2, name2)
         id1: the first player's unique id

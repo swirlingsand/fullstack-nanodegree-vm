@@ -34,7 +34,7 @@ create view winners as
 	group by players.player_id, players.name order by players.player_id;
 
 -- same concept as winners for losers
--- ! important, make sure comparing player ID to loser in loser view
+-- ! important, make sure in from statement comparing player ID to loser in loser view
 
 create view losers as
 	select players.player_id, players.name, count(matches.loser) as losses
