@@ -47,8 +47,8 @@ License:
 
 Portions from Udacity Full-Stack Engineer course and are copyright Udacity
 
-Inspiration for parts of the view format and usage of zip function from 
-    internet help.
+Inspiration for parts of the view format and usage of zip function
+    and views from internet help.
 
 Otherwise,
 

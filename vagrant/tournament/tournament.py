@@ -92,8 +92,8 @@ def playerStandings():
         select player_id, name,
         count(matches.winner = player_id), count(matches)
         from players left join matches
-           on players.player_id = matches.player1 or
-            players.player_id = matches.player2
+           on players.player_id = matches.winner or
+            players.player_id = matches.loser
         group by players.player_id
 
     """
@@ -108,8 +108,7 @@ def reportMatch(winner, loser):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("insert into matches (player1, winner) values (%s, %s)", (winner, winner,))
-    c.execute("insert into matches (player2, loser) values (%s, %s)", (loser, loser,))
+    c.execute("insert into matches (winner, loser) values (%s, %s)", (winner, loser,))
     conn.commit()
     conn.close()
 

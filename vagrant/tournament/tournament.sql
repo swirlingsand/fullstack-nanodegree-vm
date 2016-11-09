@@ -16,16 +16,12 @@ create table players (
 	name		text
 );
 
--- seperation of concerns for being a player in a match and receiving an outcome
--- this could be used in the future for example to assign a player to a match
--- prior to the match being played
+-- 
 
 create table matches (
 	match_id	serial		primary key,
-	player1		integer 	references players (player_id),
-	player2		integer 	references players (player_id),
-	winner		integer,
-	loser		integer
+	winner		integer 	references players (player_id),
+	loser		integer 	references players (player_id)
 );
 
 -- create a view of winners by joining players and matches
