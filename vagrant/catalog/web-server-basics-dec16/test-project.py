@@ -1,3 +1,14 @@
+"""
+12/22/2016
+
+Code from Udacity training exercises.
+
+After completing this I decided to refactor code into more abstract method files using bluepint.
+
+Place back in to /catalog directory to test
+
+"""
+
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

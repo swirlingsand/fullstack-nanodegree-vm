@@ -1,3 +1,12 @@
+"""
+12/22/2016
+
+This project file is to is to learn and understand basic HTTP handling in python.
+
+Place it in the /catalog folder to work with other files there.
+
+"""
+
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import cgi
 
@@ -40,7 +49,7 @@ class webServerHandler(BaseHTTPRequestHandler):
                 output += "</body></html>"
                 self.wfile.write(output)
                 return
-        
+
             if self.path.endswith("/restaurants/new"):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
@@ -54,10 +63,13 @@ class webServerHandler(BaseHTTPRequestHandler):
                 return
 
             if self.path.endswith("/edit"):
-                restaurantIDPath = self.path.split("/")[2]  # split url on / , grab 3 item on 0 index
+                # split url on / , grab 3 item on 0 index
+                restaurantIDPath = self.path.split("/")[2]
 
-                # go to session, ask for restaurant, filter by the id from URL, grab one record
-                myRestaurantQuery = session.query(Restaurant).filter_by(id = restaurantIDPath).one()
+                # go to session, ask for restaurant, filter by the id from URL,
+                # grab one record
+                myRestaurantQuery = session.query(
+                    Restaurant).filter_by(id=restaurantIDPath).one()
 
                 # If query is not blank array
                 if myRestaurantQuery != []:
@@ -73,10 +85,13 @@ class webServerHandler(BaseHTTPRequestHandler):
                     return
 
             if self.path.endswith("/delete"):
-                restaurantIDPath = self.path.split("/")[2]  # split url on / , grab 3 item on 0 index
+                # split url on / , grab 3 item on 0 index
+                restaurantIDPath = self.path.split("/")[2]
 
-                # go to session, ask for restaurant, filter by the id from URL, grab one record
-                myRestaurantQuery = session.query(Restaurant).filter_by(id = restaurantIDPath).one()
+                # go to session, ask for restaurant, filter by the id from URL,
+                # grab one record
+                myRestaurantQuery = session.query(
+                    Restaurant).filter_by(id=restaurantIDPath).one()
 
                 # If query is not blank array
                 if myRestaurantQuery != []:
@@ -91,17 +106,15 @@ class webServerHandler(BaseHTTPRequestHandler):
                     self.wfile.write(output)
                     return
 
-
         except IOError:
             self.send_error(404, 'File Not Found: %s' % self.path)
-
 
     def do_POST(self):
         try:
             if self.path.endswith("/restaurants/new"):
                 ctype, pdict = cgi.parse_header(
                     self.headers.getheader('content-type'))
-                
+
                 if ctype == 'multipart/form-data':
                     fields = cgi.parse_multipart(self.rfile, pdict)
                     restaurant_name = fields.get('restaurant_name')
@@ -112,56 +125,62 @@ class webServerHandler(BaseHTTPRequestHandler):
 
                     self.send_response(301)  # why here?
                     self.send_header('Content-type', 'text/html')
-                    self.send_header('Location', '/restaurants')  #redirect to homepage
+                    # redirect to homepage
+                    self.send_header('Location', '/restaurants')
                     self.end_headers()
-
-
 
             if self.path.endswith("/edit"):
                 ctype, pdict = cgi.parse_header(
                     self.headers.getheader('content-type'))
-                
+
                 if ctype == 'multipart/form-data':
                     fields = cgi.parse_multipart(self.rfile, pdict)
-                
+
                     restaurant_name1 = fields.get('restaurant_name')
                     restaurantIDPath = self.path.split("/")[2]
 
-                    # go to session, ask for restaurant, filter by the id from URL, grab one record
-                    myRestaurantQuery = session.query(Restaurant).filter_by(id = restaurantIDPath).one()
+                    # go to session, ask for restaurant, filter by the id from
+                    # URL, grab one record
+                    myRestaurantQuery = session.query(
+                        Restaurant).filter_by(id=restaurantIDPath).one()
 
                     if myRestaurantQuery != []:
                         myRestaurantQuery.name = restaurant_name1[0]
-                        # important when editing, you aren't adding a new object? 
-                        # instead we are calling the existing object, and name child, and re-declaring value?
+                        # important when editing, you aren't adding a new object?
+                        # instead we are calling the existing object, and name
+                        # child, and re-declaring value?
                         session.add(myRestaurantQuery)
                         session.commit()
 
                         self.send_response(301)  # why here?
                         self.send_header('Content-type', 'text/html')
-                        self.send_header('Location', '/restaurants')  #redirect to homepage
+                        # redirect to homepage
+                        self.send_header('Location', '/restaurants')
                         self.end_headers()
 
             if self.path.endswith("/delete"):
                 restaurantIDPath = self.path.split("/")[2]
-                # go to session, ask for restaurant, filter by the id from URL, grab one record
-                myRestaurantQuery = session.query(Restaurant).filter_by(id = restaurantIDPath).one()
+                # go to session, ask for restaurant, filter by the id from URL,
+                # grab one record
+                myRestaurantQuery = session.query(
+                    Restaurant).filter_by(id=restaurantIDPath).one()
 
                 if myRestaurantQuery:
                     # myRestaurantQuery.name = restaurant_name1[0]
-                    # important when editing, you aren't adding a new object? 
-                    # instead we are calling the existing object, and name child, and re-declaring value?
+                    # important when editing, you aren't adding a new object?
+                    # instead we are calling the existing object, and name
+                    # child, and re-declaring value?
                     session.delete(myRestaurantQuery)
                     session.commit()
 
                     self.send_response(301)  # why here?
                     self.send_header('Content-type', 'text/html')
-                    self.send_header('Location', '/restaurants')  #redirect to homepage
-                    self.end_headers() 
+                    # redirect to homepage
+                    self.send_header('Location', '/restaurants')
+                    self.end_headers()
 
         except:
             pass
-
 
 
 def main():
