@@ -18,8 +18,13 @@ On POST request: posts new item to database.
 def newMenuItem(restaurant_id):
     # How can I use a try/except block better here?
     if request.method == 'POST':
-        newItem = MenuItem(name=request.form[
-            'name'], restaurant_id=restaurant_id)
+        newItem = MenuItem(
+            name=request.form['name'],
+            price=request.form['price'],
+            description=request.form['description'],
+            course=request.form['course'],
+            restaurant_id=restaurant_id)
+
         session.add(newItem)
         session.commit()
         flash("Now we are cooking! Menu item created.")

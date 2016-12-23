@@ -14,8 +14,8 @@ def editRestaurant(restaurant_id):
     if request.method == 'POST':
         if request.form['name']:
             editedRestaurant.name = request.form['name']
-        session.add(editedRestaurant)
-        session.commit()
+            session.add(editedRestaurant)
+            session.commit()
         flash("Restaurant updated.")
         return redirect(url_for('routes.showRestaurant', restaurant_id=restaurant_id))
     else:

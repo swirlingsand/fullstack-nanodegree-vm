@@ -1,26 +1,21 @@
-<html>
-
-<head>
-	<link rel="stylesheet" type="text/css" href=" {{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
+{% extends "base.html" %}
+{% set active_page = "TODO" %}
+{% block content %}
 
 <h1>{{restaurant.name}}</h1>
 
+<a href="{{url_for('routes.newMenuItem', restaurant_id = restaurant.id, menu_id = items.id )}}">
+	Create new item
+</a>
 
-<!--MESSAGE FLASHING EXAMPLE -->
-{% with messages = get_flashed_messages() %}
-{% if messages %}
+<a href="{{url_for('routes.deleteRestaurant', restaurant_id = restaurant.id )}}">
+	Delete Restaurant
+</a>
 
-<ul>
-{% for message in messages %}
-  <li><strong>{{message}}</strong></li>
-  {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
-
+<div class="">
+	<a href="{{url_for('routes.editRestaurant', restaurant_id = restaurant.id)}}">
+	Edit
+</a>
 
 
 {% for i in items %}
@@ -60,6 +55,6 @@
 </div>
 
 {% endfor %}
-</body>
 
-</html>
+
+{% endblock %}

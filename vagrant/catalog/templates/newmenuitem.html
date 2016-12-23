@@ -1,21 +1,33 @@
-<html>
+{% extends "base.html" %}
+{% set active_page = "TODO" %}
+{% block content %}
 
-	<head>
-		<link rel="stylesheet" type="text/css" href=" {{ url_for('static', filename='style.css') }}">
-	</head>
+<h1> New Menu Item </h1>
 
-	<body>
-		<h1> New Menu Item </h1>
+<form action="{{ url_for('routes.newMenuItem',restaurant_id = restaurant_id )}}" method = 'post'>
 
-		<form action="{{url_for('routes.newMenuItem', restaurant_id=restaurant_id )}}" method = 'POST'>
+<dl>
+	<dt>Name:</dt>
+		<dd><input type ='text' name='name' placeholder="name"></dd>
+	<dt>Description:</dt>
+		<dd><textarea name = 'description' rows='5' cols='40' placeholder="description"></textarea></dd>
+	<dt>Price:</dt>
+		<dd><input type = 'text' name='price' placeholder="price"></dd>
+	<dt>Course:</dt>
 
-		<p>Name:</p>
+	<dd><input type ='radio' name='course' value='Appetizer' >Appetizer</dd>
+	<dd><input type ='radio' name='course' value='Entree'>Entree</dd>
+	<dd><input type ='radio' name='course' value='Dessert'>Dessert</dd>
+	<dd><input type ='radio' name='course' value='Beverage'>Beverage</dd>
+</dl>
 
-		<input type='text' size='30' name='name'>
 
-		<input type='submit' value='Create'>
+<input type='submit' value='Create'>
 
-		</form>
+</form>
 
-	</body>
-</html>
+<a href = '{{url_for('routes.allRestaurants')}}'> Cancel </a>
+
+
+
+{% endblock %}

@@ -2,7 +2,7 @@ from flask import Blueprint
 
 routes = Blueprint('routes', __name__)
 
-from .showRestaurants import showRestaurant, showRestaurantJSON
+from .showRestaurants import showRestaurant, allRestaurants
 
 from .editRestaurant import editRestaurant
 from .deleteRestaurant import deleteRestaurant
